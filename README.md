@@ -19,7 +19,8 @@ Requirements
 
 I support clean installations of these operating systems:
 
-* [macOS Sierra](https://www.apple.com/macos/sierra/) (10.12)
+* macOS High Sierra (10.13)
+* macOS Sierra (10.12)
 * OS X El Capitan (10.11)
 * OS X Yosemite (10.10)
 * OS X Mavericks (10.9)
