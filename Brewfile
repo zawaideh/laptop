@@ -2,16 +2,15 @@ cask_args appdir: '/Applications'
 
 brew 'git'
 
-brew 'heroku-toolbelt'
+tap 'heroku/brew'
+brew 'heroku'
 
 tap 'homebrew/services'
-
 brew 'postgresql'
-
-brew 'phantomjs'
 
 brew 'hub'
 
+cask 'phantomjs'
 cask 'flux'
-cask 'github-desktop'
+cask 'github'
 cask 'sublime-text'
