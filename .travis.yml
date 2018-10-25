@@ -1,8 +1,4 @@
-language: sh
-
-before_script:
-  - wget "http://ftp.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.5.0-3_amd64.deb"
-  - sudo dpkg -i "shellcheck_0.5.0-3_amd64.deb"
-
+language: shell
+sudo: false
 script:
   - shellcheck mac
