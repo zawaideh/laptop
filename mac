@@ -8,7 +8,7 @@ fancy_echo() {
   local fmt="$1"; shift
 
   # shellcheck disable=SC2059
-  printf "\n$fmt\n" "$@"
+  printf "\\n$fmt\\n" "$@"
 }
 
 append_to_file() {
@@ -16,7 +16,7 @@ append_to_file() {
   local text="$2"
 
   if ! grep -qs "^$text$" "$file"; then
-    printf "\n%s\n" "$text" >> "$file"
+    printf "\\n%s\\n" "$text" >> "$file"
   fi
 }
 
@@ -41,7 +41,7 @@ change_shell_to_zsh() {
   echo "Note that there won't be visual feedback when you type your password."
   echo "Type it slowly and press return, or press control-c to cancel the switch to zsh and exit the script."
   create_zshrc_and_set_it_as_shell_file
-  chsh -s "$(which zsh)"
+  chsh -s "$(command -v zsh)"
   echo "Note that you can always switch back to ${bold}bash${normal} if you change your mind."
   echo "The instructions for changing shells manually are available in the README."
 }
@@ -72,11 +72,11 @@ case "$SHELL" in
       read -r -n 1 response
       if [ "$response" = "y" ]; then
         fancy_echo "=== Getting ready to change your shell to zsh. ==="
-        if ! grep -qs "$(which zsh)" /etc/shells; then
+        if ! grep -qs "$(command -v zsh)" /etc/shells; then
           echo "It looks like your version of zsh is missing from ${bold}/etc/shells${normal}."
           echo "It must be added there manually before your shell can be changed."
           echo "Open ${bold}/etc/shells${normal} with your favorite text editor,"
-          echo "then add ${bold}$(which zsh)${normal} in a new line and save the file."
+          echo "then add ${bold}$(command -v zsh)${normal} in a new line and save the file."
           echo -n "Once you've added it, press ${bold}y${normal} to continue, or ${bold}n${normal} to cancel: "
           read -r -n 1 response
           if [ "$response" = "y" ]; then
@@ -117,11 +117,11 @@ gem_install_or_update() {
 app_is_installed() {
   local app_name
   app_name=$(echo "$1" | cut -d'-' -f1)
-  find /Applications -iname "$app_name*" -maxdepth 1 | egrep '.*' > /dev/null
+  find /Applications -iname "$app_name*" -maxdepth 1 | grep -E '.app' > /dev/null
 }
 
 latest_installed_ruby() {
-  find "$HOME/.rubies" -maxdepth 1 -name 'ruby-*' | tail -n1 | egrep -o '\d+\.\d+\.\d+'
+  find "$HOME/.rubies" -maxdepth 1 -name 'ruby-*' | tail -n1 | grep -E -o '\d+\.\d+\.\d+'
 }
 
 switch_to_latest_ruby() {
@@ -260,7 +260,7 @@ EOT
     # display pwd in orange, current ruby version in green,
     # and set prompt character to $
     # shellcheck disable=SC2016
-    if [ $shell_file = "$HOME/.bash_profile" ]; then
+    if [ "$shell_file" = "$HOME/.bash_profile" ]; then
       append_to_file "$shell_file" 'export PS1="${ORANGE}[\w] ${GREEN}$(prompt_ruby_info) ${NORMAL}$ "'
     else
       append_to_file "$shell_file" 'precmd () { PS1="${ORANGE}[%~] ${GREEN}$(prompt_ruby_info) ${NORMAL}$ " }'
