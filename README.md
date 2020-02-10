@@ -19,6 +19,7 @@ Requirements
 
 Supported operating systems:
 
+* macOS Catalina (10.15)
 * macOS Mojave (10.14)
 * macOS High Sierra (10.13)
 * macOS Sierra (10.12)
