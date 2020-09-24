@@ -177,8 +177,6 @@ else
 fi
 
 # shellcheck disable=SC2016
-append_to_file "$shell_file" 'eval "$(hub alias -s)"'
-
 append_to_file "$HOME/.gemrc" 'gem: --no-document'
 
 if command -v rbenv >/dev/null || command -v rvm >/dev/null; then
