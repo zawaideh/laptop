@@ -8,9 +8,8 @@ brew 'heroku'
 tap 'homebrew/services'
 brew 'postgresql'
 
-brew 'hub'
+brew 'gh'
 
-cask 'phantomjs'
 cask 'flux'
 cask 'github'
 cask 'sublime-text'
