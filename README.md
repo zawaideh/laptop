@@ -11,8 +11,7 @@ upgrades, or skips packages based on what is already installed on the machine.
 This particular version of the script is geared toward beginners who want to
 set up a Ruby environment on their Mac to be able to install gems such as Rails
 or Jekyll. More advanced users can easily [customize](#customize-in-laptoplocal-and-brewfilelocal)
-the script to install additional tools. To see an example of a more advanced
-script, check out [18F/laptop](https://github.com/18F/laptop).
+the script to install additional tools.
 
 Requirements
 ------------
@@ -27,8 +26,12 @@ Supported operating systems:
 * OS X Yosemite (10.10)
 * OS X Mavericks (10.9)
 
-Older versions may work but aren't regularly tested. Bug reports for older
-versions are welcome.
+Supported shells:
+
+* bash
+* fish
+* zsh
+
 
 Install
 -------
@@ -49,11 +52,11 @@ The [script](https://github.com/monfresh/laptop/blob/master/mac) itself is
 available in this repo for you to review if you want to see what it does
 and how it works.
 
-Note that the script will ask you to enter your macOS password at various
-points. This is the same password that you use to log in to your Mac.
-If you don't already have it installed, GitHub for Mac will launch
-automatically at the end of the script so you can set up everything you'll
-need to push code to GitHub.
+Note that the script might ask you to enter your macOS password at various
+points. This is the same password that you use to log in to your Mac. If you
+have `rbenv` or `RVM` installed, the script will ask you to uninstall them first
+and run the script again. Look at the script output for uninstallation
+instructions.
 
 **Once the script is done, quit and relaunch Terminal.**
 
@@ -66,37 +69,48 @@ convenience by typing `laptop` and pressing `return` in your Terminal.
 [Spotlight]: https://support.apple.com/en-us/HT204014
 [video]: https://github.com/monfresh/laptop/wiki/Detailed-installation-instructions-with-video
 
+Why chruby and not RVM or rbenv?
+--------------------------------
+
+It is the smallest, most reliable, and easiest to understand. I like that it does not do some of the things that other tools do:
+
+* Does not hook `cd`.
+* Does not install executable shims.
+* Does not require Rubies to be installed into your home directory.
+* Does not automatically switch Rubies by default.
+* Does not require write-access to the Ruby directory in order to install gems.
+
+Other folks who prefer `chruby`:
+
+* <https://kgrz.io/programmers-guide-to-choosing-ruby-version-manager.html>
+* <https://stevemarshall.com/journal/why-i-use-chruby/>
+* <https://linhmtran168.github.io/blog/2014/02/27/moving-from-rbenv-to-chruby/>
+
 Debugging
 ---------
 
 Your last Laptop run will be saved to a file called `laptop.log` in your home
 folder. Read through it to see if you can debug the issue yourself. If not,
 copy the entire contents of `laptop.log` into a
-[new GitHub Issue](https://github.com/monfresh/laptop/issues/new) for me.
-Or, attach the whole log file as an attachment.
+[new GitHub Issue](https://github.com/monfresh/laptop/issues/new) (or attach the whole log file to the issue) for me and I'll be glad to help you. If the script doesn't work for you, it's most likely a bug in my script, which I'd love to fix, so please don't hesitate to report any issues.
 
 What it sets up
 ---------------
 
 * [Bundler] for managing Ruby gems
 * [chruby] for managing [Ruby] versions (recommended over RVM and rbenv)
-* [Flux] for adjusting your Mac's display color so you can sleep better
 * [GitHub CLI] brings GitHub to your terminal.
-* [GitHub Desktop] for setting up your SSH keys automatically
 * [Heroku Toolbelt] for deploying and managing Heroku apps
 * [Homebrew] for managing operating system libraries
 * [Homebrew Cask] for quickly installing Mac apps from the command line
 * [Homebrew Services] so you can easily stop, start, and restart services
 * [Postgres] for storing relational data
 * [ruby-install] for installing different versions of Ruby
-* [Sublime Text 3] for coding all the things
 * [Zsh] as your shell (if you opt in)
 
 [Bundler]: http://bundler.io/
 [chruby]: https://github.com/postmodern/chruby
-[Flux]: https://justgetflux.com/
 [GitHub CLI]: https://cli.github.com
-[GitHub Desktop]: https://desktop.github.com/
 [Heroku Toolbelt]: https://toolbelt.heroku.com/
 [Homebrew]: http://brew.sh/
 [Homebrew Cask]: http://caskroom.io/
@@ -104,55 +118,10 @@ What it sets up
 [Postgres]: http://www.postgresql.org/
 [Ruby]: https://www.ruby-lang.org/en/
 [ruby-install]: https://github.com/postmodern/ruby-install
-[Sublime Text 3]: http://www.sublimetext.com/3
 [Zsh]: http://www.zsh.org/
 
 It should take less than 15 minutes to install (depends on your machine and
 internet connection).
-
-The script also lightly customizes your shell prompt so that it displays your
-current directory in orange, followed by the current Ruby version or gemset in
-green, and sets the prompt character to `$`. It also allows you to easily
-distinguish directories from files when running `ls` by displaying directories
-in a different color. Below is a screenshot showing what the colors look like
-when using the default Terminal white background, the Solarized Dark theme, and the Solarized Light theme.
-
-![Terminal screenshots](http://cl.ly/image/19022S0q3H1b/download/Image%202015-05-12%20at%2011.31.04%20PM.png)
-
-If you want to use the [Solarized](http://ethanschoonover.com/solarized)
-themes, run the following commands in your Terminal:
-```bash
-cd ~
-
-curl --remote-name https://raw.githubusercontent.com/tomislav/osx-terminal.app-colors-solarized/master/Solarized%20Dark.terminal
-
-curl --remote-name https://raw.githubusercontent.com/tomislav/osx-terminal.app-colors-solarized/master/Solarized%20Light.terminal
-
-open Solarized%20Dark.terminal
-
-open Solarized%20Light.terminal
-```
-
-This will add the Solarized themes to your Terminal's Profiles, and if you want to set one of them as the default, go to your Terminal's Preferences,
-click on the Settings tab, scroll down to the Solarized Profile, click on it,
-then click the Default button. When you open a new window or tab (or if you quit and relaunch Terminal), it will use the Solarized theme.
-
-If you want to try out different prompt colors other than orange and green,
-open your `.zshrc` or `.bash_profile` in Sublime Text:
-
-```sh
-subl ~/.zshrc
-```
-
-Define a new color variable using any of the 256 possible [Xterm colors](http://upload.wikimedia.org/wikipedia/commons/9/95/Xterm_color_chart.png). For example:
-
-```
-BLUE=$(tput setaf 190)
-```
-
-Then in the line that contains `PS1=`, replace `{ORANGE}` or `{GREEN}` with
-`{BLUE}`. Save the file, then open a new Terminal window or tab to see the changes.
-
 
 Customize in `~/.laptop.local` and `~/Brewfile.local`
 -----------------------------------------------------
@@ -164,9 +133,9 @@ cd ~
 curl --remote-name https://raw.githubusercontent.com/monfresh/laptop/master/.laptop.local
 curl --remote-name https://raw.githubusercontent.com/monfresh/laptop/master/Brewfile.local
 
-# open the files in Sublime Text
-subl .laptop.local
-subl Brewfile.local
+# open the files in your text editor
+open .laptop.local
+open Brewfile.local
 ```
 
 Your `~/.laptop.local` is run at the end of the `mac` script.
@@ -175,17 +144,23 @@ tools or Mac apps with Homebrew, add them to your `~/Brewfile.local`.
 You can use the `.laptop.local` and `Brewfile.local` you downloaded
 above to get started. It lets you install the following tools and Mac apps:
 
-* [Atom] - GitHub's open source text editor
-* [CloudApp] for sharing screenshots and making an animated GIF from a video
 * [Firefox] for testing your Rails app on a browser other than Chrome or Safari
+* [Flux] for adjusting your Mac's display color so you can sleep better
+* [GitHub Desktop] for working with your repos using a GUI
 * [iTerm2] - an awesome replacement for the macOS Terminal
+* [Nova] - Panic's new macOS native code editor
 * [Redis] for storing key-value data
+* [Sublime Text 3] - a solid and fast code editor
+* [Visual Studio Code] - Microsoft's popular code editor
 
-[Atom]: https://atom.io/
-[CloudApp]: http://getcloudapp.com/
 [Firefox]: https://www.mozilla.org/en-US/firefox/new/
-[iTerm2]: http://iterm2.com/
-[Redis]: http://redis.io/
+[Flux]: https://justgetflux.com/
+[GitHub Desktop]: https://desktop.github.com/
+[iTerm2]: https://iterm2.com/
+[Nova]: https://nova.app/
+[Redis]: https://redis.io/
+[Sublime Text 3]: https://www.sublimetext.com/3
+[Visual Studio Code]: https://code.visualstudio.com/
 
 Write your customizations such that they can be run safely more than once.
 See the `mac` script for examples.
@@ -220,19 +195,6 @@ To start all services at once:
 ```
 brew services start --all
 ```
-
-How to switch your shell back to bash from zsh (or vice versa)
---------------------------------------------------------------
-1. Find out which shell you're currently running: `echo $SHELL`
-2. Find out the location of the shell you want to switch to. For example, if
-   you want to switch to `bash`, run `which bash`.
-3. Verify if the shell location is included in `/etc/shells`.
-   Run `cat /etc/shells` to see the contents of the file.
-4. If the location of the shell is included, run `chsh -s [the location of the shell]`.
-   For example, if `which bash` returned `/bin/bash`, you would run `chsh -s /bin/bash`.
-
-   If the location of the shell is not in `/etc/shells`, add it, then run the `chsh` command.
-   If you have Sublime Text, you can open the file by running `subl /etc/shells`.
 
 Credits
 -------

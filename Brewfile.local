@@ -1,5 +1,9 @@
-cask 'atom'
-cask 'cloud'
-cask 'firefox'
-cask 'iterm2'
 brew 'redis'
+
+cask 'firefox'
+cask 'flux'
+cask 'github'
+cask 'iterm2'
+cask 'nova'
+cask 'sublime-text'
+cask 'visual-studio-code'

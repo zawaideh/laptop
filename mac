@@ -36,14 +36,16 @@ create_bash_profile_and_set_it_as_shell_file() {
   shell_file="$HOME/.bash_profile"
 }
 
-change_shell_to_zsh() {
-  fancy_echo "Please enter your password to continue."
-  echo "Note that there won't be visual feedback when you type your password."
-  echo "Type it slowly and press return, or press control-c to cancel the switch to zsh and exit the script."
-  create_zshrc_and_set_it_as_shell_file
-  chsh -s "$(command -v zsh)"
-  echo "Note that you can always switch back to ${bold}bash${normal} if you change your mind."
-  echo "The instructions for changing shells manually are available in the README."
+create_fish_config_and_set_it_as_shell_file() {
+  if [ ! -d "$HOME/.config/fish" ]; then
+     mkdir "$HOME/.config/fish"
+  fi
+
+  if [ ! -f "$HOME/.config/fish/config.fish" ]; then
+    touch "$HOME/.config/fish/config.fish"
+  fi
+
+  shell_file="$HOME/.config/fish/config.fish"
 }
 
 # shellcheck disable=SC2154
@@ -59,40 +61,11 @@ case "$SHELL" in
   */zsh) :
     create_zshrc_and_set_it_as_shell_file
     ;;
-  *)
+  */bash)
     create_bash_profile_and_set_it_as_shell_file
-    if [ -z "$CI" ]; then
-      bold=$(tput bold)
-      normal=$(tput sgr0)
-      echo "Want to switch your shell from the default ${bold}bash${normal} to ${bold}zsh${normal}?"
-      echo "Both work fine for development, and ${bold}zsh${normal} has some extra "
-      echo "features for customization and tab completion."
-      echo "If you aren't sure or don't care, we recommend ${bold}zsh${normal}."
-      echo -n "Press ${bold}y${normal} to switch to zsh, ${bold}n${normal} to keep bash: "
-      read -r -n 1 response
-      if [ "$response" = "y" ]; then
-        fancy_echo "=== Getting ready to change your shell to zsh. ==="
-        if ! grep -qs "$(command -v zsh)" /etc/shells; then
-          echo "It looks like your version of zsh is missing from ${bold}/etc/shells${normal}."
-          echo "It must be added there manually before your shell can be changed."
-          echo "Open ${bold}/etc/shells${normal} with your favorite text editor,"
-          echo "then add ${bold}$(command -v zsh)${normal} in a new line and save the file."
-          echo -n "Once you've added it, press ${bold}y${normal} to continue, or ${bold}n${normal} to cancel: "
-          read -r -n 1 response
-          if [ "$response" = "y" ]; then
-            change_shell_to_zsh
-          else
-            fancy_echo "Shell will not be changed."
-          fi
-        else
-          change_shell_to_zsh
-        fi
-      else
-        fancy_echo "Shell will not be changed."
-      fi
-    else
-      fancy_echo "CI System detected, will not change shells"
-    fi
+    ;;
+  */fish)
+    create_fish_config_and_set_it_as_shell_file
     ;;
 esac
 
@@ -132,13 +105,14 @@ switch_to_latest_ruby() {
 
 append_to_file "$shell_file" "alias laptop='bash <(curl -s https://raw.githubusercontent.com/monfresh/laptop/master/laptop)'"
 
-# shellcheck disable=SC2016
-append_to_file "$shell_file" 'export PATH="$HOME/.bin:$PATH"'
+if ! echo "$SHELL" | grep "fish"; then
+  # shellcheck disable=SC2016
+  append_to_file "$shell_file" 'export PATH="$HOME/.bin:$PATH"'
+fi
 
 if ! command -v brew >/dev/null; then
   fancy_echo "Installing Homebrew ..."
-    curl -fsS \
-      'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
+     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
     # shellcheck disable=SC2016
     append_to_file "$shell_file" 'export PATH="/usr/local/bin:$PATH"'
@@ -180,7 +154,9 @@ fi
 append_to_file "$HOME/.gemrc" 'gem: --no-document'
 
 if command -v rbenv >/dev/null || command -v rvm >/dev/null; then
-  fancy_echo 'We recommend chruby and ruby-install over RVM or rbenv'
+  fancy_echo 'We recommend chruby and ruby-install over RVM or rbenv.'
+  echo "Please uninstall RVM or rbenv, and remove any related lines from $shell_file, then run this script again."
+  echo "To uninstall RVM, run 'rvm implode'. To uninstall rbenv, follow the instructions here: https://github.com/rbenv/rbenv#uninstalling-rbenv"
 else
   if ! brew_is_installed "chruby"; then
     fancy_echo 'Installing chruby, ruby-install, and the latest Ruby...'
@@ -189,9 +165,19 @@ else
     brew 'chruby'
     brew 'ruby-install'
 EOF
+    if echo "$SHELL" | grep "fish"; then
+      brew bundle --file=- <<EOF
+      brew 'chruby-fish'
+EOF
+    fi
 
-    append_to_file "$shell_file" 'source /usr/local/share/chruby/chruby.sh'
-    append_to_file "$shell_file" 'source /usr/local/share/chruby/auto.sh'
+    if echo "$SHELL" | grep "fish"; then
+      append_to_file "$shell_file" 'source /usr/local/share/chruby/chruby.fish'
+      append_to_file "$shell_file" 'source /usr/local/share/chruby/auto.fish'
+    else
+      append_to_file "$shell_file" 'source /usr/local/share/chruby/chruby.sh'
+      append_to_file "$shell_file" 'source /usr/local/share/chruby/auto.sh'
+    fi
 
     ruby-install ruby
 
@@ -203,6 +189,12 @@ EOF
     brew 'chruby'
     brew 'ruby-install'
 EOF
+    if echo "$SHELL" | grep "fish"; then
+      brew bundle --file=- <<EOF
+      brew 'chruby-fish'
+EOF
+    fi
+
     fancy_echo 'Checking if a newer version of Ruby is available...'
     switch_to_latest_ruby
 
@@ -228,48 +220,6 @@ number_of_cores=$(sysctl -n hw.ncpu)
 bundle config --global jobs $((number_of_cores - 1))
 
 fancy_echo '...Finished Ruby installation checks.'
-
-no_prompt_customizations_in_shell_file() {
-  ! grep -qs -e "PS1=" -e "precmd" -e "PROMPT=" "$shell_file"
-}
-
-no_zsh_frameworks() {
-  [ ! -d "$HOME/.oh-my-zsh" ] && [ ! -d "$HOME/.zpresto" ] && [ ! -d "$HOME/.zim" ] && [ ! -d "$HOME/.zplug" ]
-}
-
-if [ -z "$CI" ] && no_zsh_frameworks && no_prompt_customizations_in_shell_file; then
-  echo -n "Would you like to customize your prompt to display the current directory and ruby version? [y/n]: "
-  read -r -n 1 response
-  if [ "$response" = "y" ]; then
-    if ! grep -qs "prompt_ruby_info()" "$shell_file"; then
-      cat <<EOT >> "$shell_file"
-
-  prompt_ruby_info() {
-    echo $(ruby -v | grep -o 'ruby [^\( ]*')
-  }
-EOT
-    fi
-    # shellcheck disable=SC2016
-    append_to_file "$shell_file" 'GREEN=$(tput setaf 65)'
-    # shellcheck disable=SC2016
-    append_to_file "$shell_file" 'ORANGE=$(tput setaf 166)'
-    # shellcheck disable=SC2016
-    append_to_file "$shell_file" 'NORMAL=$(tput sgr0)'
-    # display pwd in orange, current ruby version in green,
-    # and set prompt character to $
-    # shellcheck disable=SC2016
-    if [ "$shell_file" = "$HOME/.bash_profile" ]; then
-      append_to_file "$shell_file" 'export PS1="${ORANGE}[\w] ${GREEN}$(prompt_ruby_info) ${NORMAL}$ "'
-    else
-      append_to_file "$shell_file" 'precmd () { PS1="${ORANGE}[%~] ${GREEN}$(prompt_ruby_info) ${NORMAL}$ " }'
-    fi
-    # display directories and files in different colors when running ls
-    append_to_file "$shell_file" 'export CLICOLOR=1;'
-    append_to_file "$shell_file" 'export LSCOLORS=exfxcxdxbxegedabagacad;'
-  else
-    fancy_echo "Skipping prompt customization."
-  fi
-fi
 
 if [ -f "$HOME/.laptop.local" ]; then
   # shellcheck source=/dev/null

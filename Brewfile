@@ -9,7 +9,3 @@ tap 'homebrew/services'
 brew 'postgresql'
 
 brew 'gh'
-
-cask 'flux'
-cask 'github'
-cask 'sublime-text'
