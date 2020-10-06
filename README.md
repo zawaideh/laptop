@@ -72,7 +72,10 @@ convenience by typing `laptop` and pressing `return` in your Terminal.
 Why chruby and not RVM or rbenv?
 --------------------------------
 
-It is the smallest, most reliable, and easiest to understand. I like that it does not do some of the things that other tools do:
+This script used `RVM` at first, but it started causing problems, so I switched to
+`chruby`, and haven't had any issues since. `chruby` is also is the simplest, most
+reliable, and easiest to understand. I like that it does not do some of the things
+that other Ruby managers do:
 
 * Does not hook `cd`.
 * Does not install executable shims.
