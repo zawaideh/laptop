@@ -86,6 +86,8 @@ This should point to the `.rubies` directory in your home folder. For example:
 /Users/monfresh/.rubies/ruby-2.7.2/bin/ruby
 ```
 
+## How to switch between Ruby versions and install different versions
+
 By default, the script installs the latest version of Ruby. To install an older version,
 run `ruby-install` followed by `ruby-` and the desired version. For example:
 
