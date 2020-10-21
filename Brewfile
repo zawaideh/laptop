@@ -1,11 +1,12 @@
 cask_args appdir: '/Applications'
 
-brew 'git'
+brew "zsh"
 
-tap 'heroku/brew'
-brew 'heroku'
-
-tap 'homebrew/services'
-brew 'postgresql'
-
-brew 'gh'
+# Casks
+cask "visual-studio-code"
+cask "firefox"
+cask "notion"
+cask "slack"
+cask "ticktick"
+cask "fantastical"
+cask "zoomus"
