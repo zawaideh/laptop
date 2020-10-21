@@ -221,9 +221,4 @@ bundle config --global jobs $((number_of_cores - 1))
 
 fancy_echo '...Finished Ruby installation checks.'
 
-if [ -f "$HOME/.laptop.local" ]; then
-  # shellcheck source=/dev/null
-  . "$HOME/.laptop.local"
-fi
-
 fancy_echo 'All done!'
