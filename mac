@@ -31,7 +31,7 @@ create_zshrc_and_set_it_as_shell_file() {
       done
     
       chsh -s /bin/zsh
-    EOF
+EOF
   fi
 
   shell_file="$HOME/.zshrc"
