@@ -1,7 +1,5 @@
 cask_args appdir: '/Applications'
 
-brew "zsh"
-
 # Casks
 cask "visual-studio-code"
 cask "firefox"
@@ -10,3 +8,4 @@ cask "slack"
 cask "ticktick"
 cask "fantastical"
 cask "zoomus"
+cask "lastpass"
