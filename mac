@@ -23,7 +23,7 @@ append_to_file() {
 create_zshrc_and_set_it_as_shell_file() {
   
   if [ ! -f "$HOME/.zshrc" ]; then
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)"
+    touch "$HOME/.zshrc"
   fi
 
   shell_file="$HOME/.zshrc"
