@@ -29,8 +29,6 @@ create_zshrc_and_set_it_as_shell_file() {
       for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
         ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
       done
-    
-      chsh -s /bin/zsh
 EOF
   fi
 
@@ -229,5 +227,9 @@ number_of_cores=$(sysctl -n hw.ncpu)
 bundle config --global jobs $((number_of_cores - 1))
 
 fancy_echo '...Finished Ruby installation checks.'
+if [[ $SHELL == *zsh ]]; then
+fancy_echo 'default shell is now zsh'
+chsh -s /usr/local/bin/zsh
+fi
 
 fancy_echo 'All done!'
