@@ -1,5 +1,7 @@
 cask_args appdir: '/Applications'
 
+brew "gh"
+
 # Casks
 cask "visual-studio-code"
 cask "firefox"
