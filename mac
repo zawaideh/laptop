@@ -221,9 +221,5 @@ number_of_cores=$(sysctl -n hw.ncpu)
 bundle config --global jobs $((number_of_cores - 1))
 
 fancy_echo '...Finished Ruby installation checks.'
-if [[ $SHELL == *zsh ]]; then
-fancy_echo 'default shell is now zsh'
-chsh -s /usr/local/bin/zsh
-fi
 
 fancy_echo 'All done!'
